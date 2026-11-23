@@ -1,0 +1,9 @@
+{% load i18n %}
+<form class="newsletter-form" action="{% url 'newsletter:subscribe' %}" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="next" value="{{ request.get_full_path }}">
+  <label class="visually-hidden" for="{{ field_id }}">{% translate "Email address" %}</label>
+  <input id="{{ field_id }}" type="email" name="email" required autocomplete="email" placeholder="{% translate 'you@example.com' %}">
+  <button class="btn" type="submit">{% translate "Subscribe" %}</button>
+</form>
+<p class="small muted">{% translate "We'll email you a link to confirm first." %}</p>

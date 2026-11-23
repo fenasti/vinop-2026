@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Page not found" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+{% block content %}
+  <div class="empty">
+    <h1>{% translate "We couldn't find that page" %}</h1>
+    <p>{% translate "The link may be old, or the wine may have sold out and left the shop." %}</p>
+    <div class="btn-row" style="justify-content:center">
+      <a class="btn" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+      <a class="btn btn--ghost" href="{% url 'core:home' %}">{% translate "Go to the homepage" %}</a>
+    </div>
+  </div>
+{% endblock %}

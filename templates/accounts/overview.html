@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Your account" %}{% endblock %}
+
+{% block content %}
+  <header class="page-head">
+    <h1>{% translate "Your account" %}</h1>
+    <p>{{ user.email }}</p>
+  </header>
+
+  {% if team_areas %}
+    <p class="note-box">{% translate "You're on the VinOp team." %} <a href="{% url 'team:hub' %}">{% translate "Open the team area" %}</a></p>
+  {% endif %}
+
+  <div class="account-grid">
+    <section class="panel" aria-labelledby="recent-orders">
+      <h2 id="recent-orders">{% translate "Recent orders" %}</h2>
+      {% if recent_orders %}
+        <ul class="order-list">
+          {% for order in recent_orders %}{% include "accounts/includes/order_row.html" %}{% endfor %}
+        </ul>
+        <p style="margin-top: var(--space-4)"><a href="{% url 'accounts:orders' %}">{% translate "All your orders" %}</a></p>
+      {% else %}
+        <p class="muted">{% translate "No orders yet. Your first one will show up here." %}</p>
+        <a class="btn btn--ghost" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="delivery">
+      <h2 id="delivery">{% translate "Delivery address" %}</h2>
+      {% if profile.has_address %}
+        <address class="address">
+          {% if profile.full_name %}{{ profile.full_name }}<br>{% endif %}
+          {{ profile.street_address1 }}<br>{% if profile.street_address2 %}{{ profile.street_address2 }}<br>{% endif %}
+          {{ profile.postcode }} {{ profile.city }}<br>{{ profile.country.name }}
+        </address>
+        <a class="btn btn--ghost btn--small" href="{% url 'accounts:address' %}" style="margin-top: var(--space-3)">{% translate "Edit address" %}</a>
+      {% else %}
+        <p class="muted">{% translate "Save an address and we'll fill it in at checkout." %}</p>
+        <a class="btn btn--ghost" href="{% url 'accounts:address' %}">{% translate "Add an address" %}</a>
+      {% endif %}
+    </section>
+
+    <section class="panel" aria-labelledby="settings">
+      <h2 id="settings">{% translate "Settings" %}</h2>
+      <ul class="link-list">
+        <li><a href="{% url 'wishlist:list' %}">{% icon "heart" %} {% blocktranslate count counter=wishlist_count %}Wishlist ({{ counter }} wine){% plural %}Wishlist ({{ counter }} wines){% endblocktranslate %} {% icon "chevron-right" %}</a></li>
+        <li><a href="{% url 'account_email' %}">{% icon "mail" %} {% translate "Email address" %} {% icon "chevron-right" %}</a></li>
+        <li><a href="{% url 'account_change_password' %}">{% icon "lock" %} {% translate "Password" %} {% icon "chevron-right" %}</a></li>
+        <li><a href="{% url 'account_logout' %}">{% icon "log-out" %} {% translate "Log out" %} {% icon "chevron-right" %}</a></li>
+      </ul>
+      <p class="small" style="margin-top: var(--space-4)"><a href="{% url 'accounts:delete' %}" class="muted">{% translate "Delete my account" %}</a></p>
+    </section>
+  </div>
+{% endblock %}

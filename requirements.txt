@@ -1,0 +1,16 @@
+# Ranges, not exact pins: `pip install -r requirements.txt` always gets the
+# newest security patch inside each range. Django 5.2 is the LTS release
+# (security support until April 2028).
+Django>=5.2,<5.3
+django-allauth>=65.21,<66
+django-countries>=8.2,<9
+stripe>=16.1,<17
+whitenoise>=6.12,<7
+dj-database-url>=2.3,<4
+psycopg[binary]>=3.2,<4
+Pillow>=12.0,<13
+python-dotenv>=1.2,<2
+gunicorn>=23.0,<25
+
+# Optional: keep uploaded photos in S3 in production (set USE_S3=True).
+# django-storages[s3]>=1.14,<2

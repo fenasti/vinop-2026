@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "No access" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+{% block content %}
+  <div class="empty">
+    <h1>{% translate "This page isn't open to you" %}</h1>
+    <p>{% if exception %}{{ exception }}{% else %}{% translate "You don't have permission to see it." %}{% endif %}</p>
+    <p>{% translate "If you think you should have access, ask a Shop Manager to add the right role to your account." %}</p>
+    <div class="btn-row" style="justify-content:center">
+      {% if team_areas %}<a class="btn" href="{% url 'team:hub' %}">{% translate "Back to the team area" %}</a>{% endif %}
+      <a class="btn btn--ghost" href="{% url 'core:home' %}">{% translate "Go to the shop" %}</a>
+    </div>
+  </div>
+{% endblock %}

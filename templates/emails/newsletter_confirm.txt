@@ -1,0 +1,12 @@
+{% load i18n %}{% autoescape off %}{% translate "Hello," %}
+
+{% blocktranslate with shop=site.shop_name %}Someone (hopefully you) asked to receive the {{ shop }} newsletter at this address. To confirm, open this link:{% endblocktranslate %}
+
+{{ confirm_url }}
+
+{% translate "If it wasn't you, ignore this email and nothing will happen." %}
+
+{% translate "Changed your mind later? Unsubscribe here:" %} {{ unsubscribe_url }}
+
+{{ site.shop_name }}
+{% endautoescape %}

@@ -1,0 +1,17 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Change roles" %}{% endblock %}
+
+{% block team_content %}
+  <a class="back-link" href="{% url 'team:members' %}">{% icon "chevron-left" %} {% translate "Team & roles" %}</a>
+  <h1>{{ member.get_full_name|default:member.email }}</h1>
+  <p class="muted">{{ member.email }}</p>
+  <form method="post" class="panel" style="max-width: 40rem">
+    {% csrf_token %}
+    {{ form }}
+    <div class="btn-row">
+      <button class="btn" type="submit">{% translate "Save roles" %}</button>
+      <a class="btn btn--quiet" href="{% url 'team:members' %}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+{% endblock %}

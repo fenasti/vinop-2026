@@ -1,0 +1,12 @@
+{% load i18n %}
+{# Totals box shared by the cart and checkout pages. Pass `cart`. #}
+<div class="summary">
+  <div class="summary__row"><span>{% blocktranslate count counter=cart|length %}Subtotal ({{ counter }} bottle){% plural %}Subtotal ({{ counter }} bottles){% endblocktranslate %}</span><span>{{ cart.subtotal|money }}</span></div>
+  <div class="summary__row"><span>{% translate "Delivery" %}</span><span>{% if cart.shipping %}{{ cart.shipping|money }}{% else %}{% translate "Free" %}{% endif %}</span></div>
+  {% if cart.free_shipping_gap %}
+    <div class="progress" aria-hidden="true"><div class="progress__bar" style="width: {% widthratio cart.subtotal cart.free_shipping_threshold 100 %}%"></div></div>
+    <p class="summary__note">{% blocktranslate with gap=cart.free_shipping_gap|money %}Add {{ gap }} more for free delivery.{% endblocktranslate %}</p>
+  {% endif %}
+  <div class="summary__row summary__row--total"><span>{% translate "Total" %}</span><span>{{ cart.total|money }}</span></div>
+  <p class="summary__note">{% translate "Prices include VAT." %}</p>
+</div>

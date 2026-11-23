@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{% url 'accounts:orders' %}">{% icon "chevron-left" %} {% translate "Your orders" %}</a>
+  <h1>{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}</h1>
+  <div class="order-status">
+    <span class="pill pill--{{ order.status }}">{{ order.get_status_display }}</span>
+    <span class="muted small">{% blocktranslate with date=order.created_at|date:"j F Y" %}Placed on {{ date }}{% endblocktranslate %}</span>
+    {% if order.invoice_number %}<span class="muted small">{% blocktranslate with invoice=order.invoice_number %}Invoice no. {{ invoice }}{% endblocktranslate %}</span>{% endif %}
+  </div>
+
+  {% if order.status == "shipped" %}
+    <p class="note-box">{% blocktranslate trimmed with carrier=order.carrier date=order.shipped_at|date:"j F" %}
+      Shipped with {{ carrier }} on {{ date }}.{% endblocktranslate %}
+      {% if order.tracking_number %}{% translate "Tracking number:" %} <strong>{{ order.tracking_number }}</strong>{% endif %}</p>
+  {% endif %}
+
+  <div class="split">
+    <div class="panel">
+      <h2>{% translate "Wines" %}</h2>
+      {% include "orders/includes/order_summary.html" %}
+    </div>
+    <div class="panel">
+      <h2>{% translate "Delivered to" %}</h2>
+      <address class="address">{% for line in order.address_lines %}{{ line }}<br>{% endfor %}</address>
+      {% if site.contact_email %}
+        <p class="small muted" style="margin-top: var(--space-4)">{% blocktranslate trimmed with email=site.contact_email number=order.number %}
+          Questions about this order? Email <a href="mailto:{{ email }}?subject={{ number }}">{{ email }}</a> and mention {{ number }}.
+        {% endblocktranslate %}</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load i18n static %}
+{% block head_title %}{% translate "Payment" %}{% endblock %}
+
+{% block content %}
+  {% include "orders/includes/steps.html" with step=2 %}
+  <h1>{% translate "Payment" %}</h1>
+
+  <div class="split">
+    <form id="payment-form" class="panel">
+      <div id="payment-element"><p class="muted">{% translate "Loading the secure payment form…" %}</p></div>
+      <p id="payment-error" class="payment-error" role="alert"></p>
+      <button id="pay-button" class="btn btn--block" type="submit">
+        <span data-label>{% blocktranslate with total=order.total|money %}Buy now, pay {{ total }}{% endblocktranslate %}</span>
+        <span data-busy hidden>{% translate "Confirming with your bank…" %}</span>
+      </button>
+      <p class="secure-note">{% icon "lock" %} {% translate "Payments are processed by Stripe. We never see your card details." %}</p>
+      <noscript><p class="note-box">{% translate "The payment form needs JavaScript. Please switch it on to pay." %}</p></noscript>
+    </form>
+
+    <aside class="split__aside">
+      <div class="panel">
+        <h2>{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}</h2>
+        {% include "orders/includes/order_summary.html" %}
+      </div>
+      <div class="panel">
+        <h2>{% translate "Delivering to" %}</h2>
+        <address class="address">{% for line in order.address_lines %}{{ line }}<br>{% endfor %}</address>
+        <p class="small muted mb-0">{{ order.email }}, {{ order.phone }}</p>
+        <a class="btn btn--quiet btn--small" href="{% url 'orders:checkout' %}">{% translate "Change details" %}</a>
+      </div>
+    </aside>
+  </div>
+{% endblock %}
+
+{% block extra_body %}
+  {{ stripe_config|json_script:"stripe-config" }}
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="{% static 'js/checkout.js' %}"></script>
+{% endblock %}

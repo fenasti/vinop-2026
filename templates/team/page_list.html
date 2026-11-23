@@ -1,0 +1,32 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Legal pages" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <div>
+      <h1 class="mb-0">{% translate "Legal pages" %}</h1>
+      <p class="muted mb-0">{% translate "Have a lawyer check the wording before launch. Pages marked TODO still hold placeholder text." %}</p>
+    </div>
+    <a class="btn" href="{% url 'team:page_add' %}">{% icon "plus" %} {% translate "New page" %}</a>
+  </div>
+  <table class="table">
+    <thead><tr><th>{% translate "Page" %}</th><th>{% translate "Address" %}</th><th>{% translate "In footer" %}</th><th>{% translate "Updated" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+    <tbody>
+      {% for page in pages %}
+        <tr>
+          <td class="table__primary"><a href="{% url 'team:page_edit' page.pk %}">{{ page.title }}</a>{% if "TODO" in page.body %} <span class="pill pill--pending">TODO</span>{% endif %}</td>
+          <td data-label="{% translate 'Address' %}"><a href="{{ page.get_absolute_url }}" target="_blank">{{ page.get_absolute_url }}</a></td>
+          <td data-label="{% translate 'In footer' %}">{{ page.show_in_footer|yesno:_("Yes,No") }}</td>
+          <td data-label="{% translate 'Updated' %}">{{ page.updated_at|date:"j M Y" }}</td>
+          <td class="table__actions">
+            <a class="btn btn--quiet btn--small" href="{% url 'team:page_edit' page.pk %}">{% icon "pencil" %} {% translate "Edit" %}</a>
+            <a class="btn btn--quiet btn--small" href="{% url 'team:page_delete' page.pk %}">{% icon "trash" _("Delete") %}</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr><td colspan="5">{% translate "No pages yet. Run python manage.py seed_demo to create the standard set." %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

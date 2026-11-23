@@ -1,0 +1,43 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Team & roles" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head">
+    <h1>{% translate "Team & roles" %}</h1>
+    <p>{% translate "Roles decide which parts of the team area someone can open. Customers have no role." %}</p>
+  </div>
+
+  <div class="split">
+    <table class="table">
+      <thead><tr><th>{% translate "Person" %}</th><th>{% translate "Roles" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for member in members %}
+          <tr>
+            <td class="table__primary">{{ member.get_full_name|default:member.email }}<div class="small muted">{{ member.email }}</div></td>
+            <td data-label="{% translate 'Roles' %}">
+              {% if member.is_superuser %}<span class="pill pill--shipped">{% translate "Owner" %}</span>{% endif %}
+              {% for group in member.groups.all %}<span class="pill pill--paid">{{ group.name }}</span> {% endfor %}
+            </td>
+            <td class="table__actions">{% if not member.is_superuser %}<a class="btn btn--quiet btn--small" href="{% url 'team:member_edit' member.pk %}">{% icon "pencil" %} {% translate "Change roles" %}</a>{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <aside class="split__aside">
+      <form method="post" class="panel">
+        {% csrf_token %}
+        <h2>{% translate "Add someone" %}</h2>
+        {{ form }}
+        <button class="btn" type="submit">{% translate "Find and choose roles" %}</button>
+      </form>
+      <section class="panel">
+        <h2>{% translate "What each role can do" %}</h2>
+        <dl class="dl-list" style="grid-template-columns: 1fr">
+          {% for name, description in role_descriptions %}<dt><strong>{{ name }}</strong></dt><dd class="muted">{{ description }}</dd>{% endfor %}
+        </dl>
+      </section>
+    </aside>
+  </div>
+{% endblock %}

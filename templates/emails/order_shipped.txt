@@ -1,0 +1,10 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate with name=order.full_name %}Hello {{ name }},{% endblocktranslate %}
+
+{% blocktranslate with number=order.number carrier=order.carrier %}Good news: order {{ number }} has left our warehouse with {{ carrier }}.{% endblocktranslate %}
+{% if order.tracking_number %}{% translate "Tracking number" %}: {{ order.tracking_number }}
+{% endif %}
+{% translate "The courier may need a signature from an adult (18+) on delivery." %}
+
+{% translate "Enjoy your wine!" %}
+{{ site.shop_name }}
+{% endautoescape %}

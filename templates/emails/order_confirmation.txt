@@ -1,0 +1,24 @@
+{% load i18n %}{% autoescape off %}{% blocktranslate with name=order.full_name %}Hello {{ name }},{% endblocktranslate %}
+
+{% blocktranslate with number=order.number %}Thank you for your order {{ number }}. We've received your payment and are preparing your wine.{% endblocktranslate %}
+
+{% for item in order.items.all %}{{ item.quantity }} × {{ item.wine_name }}  {{ item.line_total|money }}
+{% endfor %}
+{% translate "Subtotal" %}: {{ order.subtotal|money }}
+{% translate "Delivery" %}: {% if order.shipping_cost %}{{ order.shipping_cost|money }}{% else %}{% translate "Free" %}{% endif %}
+{% translate "Total (incl. VAT)" %}: {{ order.total|money }}
+{% if order.invoice_number %}{% translate "Invoice number" %}: {{ order.invoice_number }}{% endif %}
+
+{% translate "Delivering to" %}:
+{% for line in order.address_lines %}{{ line }}
+{% endfor %}
+{% translate "We'll email you again with a tracking number as soon as it ships." %}
+{% if order_url %}
+{% translate "Your order online" %}: {{ order_url }}{% endif %}
+
+{% translate "Right of withdrawal: you can withdraw from this purchase within 14 days of delivery." %} {{ site_url }}{% url 'core:legal' 'withdrawal' %}
+
+{% if site.contact_email %}{% blocktranslate with email=site.contact_email %}Questions? Reply to this email or write to {{ email }}.{% endblocktranslate %}{% endif %}
+
+{{ site.shop_name }}
+{% endautoescape %}

@@ -1,0 +1,6 @@
+{% extends "allauth/layouts/base.html" %}
+{% load i18n %}
+{% block main_class %}page--narrow auth{% endblock %}
+{% block before_content %}
+  <a class="back-link" href="{% url 'accounts:overview' %}">{% icon "chevron-left" %} {% translate "Your account" %}</a>
+{% endblock %}

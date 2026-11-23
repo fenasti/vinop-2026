@@ -1,0 +1,30 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Wineries" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <h1 class="mb-0">{% translate "Wineries" %}</h1>
+    <a class="btn" href="{% url 'team:winery_add' %}">{% icon "plus" %} {% translate "New winery" %}</a>
+  </div>
+  {% if wineries %}
+    <table class="table">
+      <thead><tr><th>{% translate "Winery" %}</th><th>{% translate "Region" %}</th><th class="num">{% translate "Wines" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for winery in wineries %}
+          <tr>
+            <td class="table__primary"><a href="{% url 'team:winery_edit' winery.pk %}">{{ winery.name }}</a></td>
+            <td data-label="{% translate 'Region' %}">{{ winery.region.name }}</td>
+            <td class="num" data-label="{% translate 'Wines' %}">{{ winery.wine_count }}</td>
+            <td class="table__actions">
+              <a class="btn btn--quiet btn--small" href="{% url 'team:winery_edit' winery.pk %}">{% icon "pencil" %} {% translate "Edit" %}</a>
+              <a class="btn btn--quiet btn--small" href="{% url 'team:winery_delete' winery.pk %}">{% icon "trash" _("Delete") %}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty"><p>{% translate "No wineries yet. Add the first producer." %}</p><a class="btn" href="{% url 'team:winery_add' %}">{% translate "Add a winery" %}</a></div>
+  {% endif %}
+{% endblock %}

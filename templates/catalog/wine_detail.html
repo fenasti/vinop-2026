@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ wine.full_name }}{% endblock %}
+{% block meta_description %}{{ wine.description|truncatechars:155 }}{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{% url 'catalog:list' %}">{% icon "chevron-left" %} {% translate "All wines" %}</a>
+
+  {% if not wine.is_active %}
+    <p class="note-box">{% translate "This wine is hidden from customers. You can see it because you're on the team." %}
+      <a href="{% url 'team:wine_edit' wine.pk %}">{% translate "Edit it" %}</a></p>
+  {% endif %}
+
+  <article class="wine">
+    <div class="wine__media">
+      {% if wine.image %}
+        <img src="{{ wine.image.url }}" alt="{{ wine.full_name }}">
+      {% else %}
+        {% include "catalog/includes/bottle.html" %}
+      {% endif %}
+    </div>
+
+    <div>
+      <p class="wine__winery">{{ wine.winery.name }}</p>
+      <h1 class="wine__title">{{ wine.name }} {{ wine.vintage_label }}</h1>
+      <p class="wine__region"><span class="latitude">{{ wine.region.latitude_label }}</span> <a href="{{ wine.region.get_absolute_url }}">{{ wine.region.name }}</a>, Chile</p>
+
+      {% if wine.rating_count %}
+        <a class="wine__rating" href="#reviews">
+          {% include "reviews/includes/stars.html" with rating=wine.rating_avg %}
+          {% blocktranslate count counter=wine.rating_count %}{{ counter }} review{% plural %}{{ counter }} reviews{% endblocktranslate %}
+        </a>
+      {% endif %}
+
+      <div class="wine__buy">
+        <div class="wine__price-line">
+          <span class="price">{{ wine.price|money }}</span>
+          {% if wine.is_reduced %}<s class="price price--was">{{ wine.compare_at_price|money }}</s>{% endif %}
+        </div>
+        <p class="wine__legal">
+          {% blocktranslate with unit=wine.price_per_litre|money volume=wine.volume_ml %}{{ unit }} per litre ({{ volume }} ml). Incl. VAT, plus{% endblocktranslate %}
+          <a href="{% url 'core:legal' 'shipping' %}">{% translate "shipping" %}</a>.
+        </p>
+
+        {% if wine.can_be_bought %}
+          <form class="buy-form" action="{% url 'cart:add' wine.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            {% include "includes/qty_stepper.html" with input_id="qty" value=1 min=1 max=wine.max_orderable label=wine.full_name %}
+            <button class="btn" type="submit">{% icon "bag" %} {% translate "Add to cart" %}</button>
+          </form>
+          {% if wine.is_low_stock %}
+            <p class="stock-note">{% blocktranslate count counter=wine.stock %}Only 1 bottle left.{% plural %}Only {{ counter }} bottles left.{% endblocktranslate %}</p>
+          {% endif %}
+        {% else %}
+          <p class="stock-note stock-note--out">{% translate "Sold out for now. Save it to your wishlist and check back after the next shipment." %}</p>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <form action="{% url 'wishlist:toggle' wine.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn--quiet" type="submit" aria-pressed="{{ in_wishlist|yesno:'true,false' }}">
+              {% icon "heart" %} {% if in_wishlist %}{% translate "Saved to your wishlist" %}{% else %}{% translate "Save to wishlist" %}{% endif %}
+            </button>
+          </form>
+        {% else %}
+          <a class="btn btn--quiet" href="{% url 'account_login' %}?next={{ request.path|urlencode }}">{% icon "heart" %} {% translate "Log in to save it" %}</a>
+        {% endif %}
+      </div>
+
+      {% if wine.description %}<div class="wine__description">{{ wine.description|linebreaks }}</div>{% endif %}
+
+      <dl class="facts">
+        <dt>{% translate "Style" %}</dt><dd>{{ wine.get_style_display }}</dd>
+        {% if wine.grapes.all %}<dt>{% translate "Grapes" %}</dt><dd>{{ wine.grapes.all|join:", " }}</dd>{% endif %}
+        <dt>{% translate "Vintage" %}</dt><dd>{{ wine.vintage_label }}</dd>
+        <dt>{% translate "Alcohol" %}</dt><dd>{{ wine.alcohol }} % vol</dd>
+        {% if wine.serving_temperature %}<dt>{% translate "Serve at" %}</dt><dd>{{ wine.serving_temperature }}</dd>{% endif %}
+        {% if wine.food_pairing %}<dt>{% translate "With" %}</dt><dd>{{ wine.food_pairing }}</dd>{% endif %}
+        {% if wine.tasting_notes %}<dt>{% translate "Tasting notes" %}</dt><dd>{{ wine.tasting_notes }}</dd>{% endif %}
+        <dt>{% translate "Producer" %}</dt><dd>{{ wine.winery.name }}{% if wine.winery.website %}, <a href="{{ wine.winery.website }}" rel="noopener" target="_blank">{% translate "website" %}</a>{% endif %}</dd>
+        <dt>{% translate "Allergens" %}</dt><dd>{% translate "Contains sulphites" %}</dd>
+      </dl>
+    </div>
+  </article>
+
+  <section id="reviews" class="section" aria-labelledby="reviews-title">
+    <div class="section__head">
+      <h2 id="reviews-title">{% translate "Reviews" %}</h2>
+      {% if user.is_authenticated %}
+        <a class="btn btn--ghost btn--small" href="{% url 'reviews:write' wine.slug %}">
+          {% if user_review %}{% translate "Edit your review" %}{% else %}{% translate "Write a review" %}{% endif %}
+        </a>
+      {% endif %}
+    </div>
+
+    {% if reviews %}
+      <ul class="reviews">
+        {% for review in reviews %}
+          <li class="review">
+            <div class="review__head">
+              {% include "reviews/includes/stars.html" with rating=review.rating %}
+              {% if review.user_id in buyer_ids %}<span class="review__verified">{% icon "check" %} {% translate "Bought here" %}</span>{% endif %}
+            </div>
+            {% if review.title %}<p class="review__title">{{ review.title }}</p>{% endif %}
+            {{ review.body|linebreaks }}
+            <p class="review__meta">{{ review.author_name }}, {{ review.created_at|date:"j M Y" }}
+              {% if review.user_id == user.pk %} <a href="{% url 'reviews:delete' review.pk %}">{% translate "Delete" %}</a>{% endif %}</p>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="muted">{% translate "No reviews yet." %}
+        {% if user.is_authenticated %}<a href="{% url 'reviews:write' wine.slug %}">{% translate "Be the first to review it." %}</a>
+        {% else %}<a href="{% url 'account_login' %}?next={{ request.path|urlencode }}">{% translate "Log in to write the first one." %}</a>{% endif %}
+      </p>
+    {% endif %}
+  </section>
+
+  {% if related %}
+    <section class="section" aria-labelledby="related-title">
+      <div class="section__head">
+        <h2 id="related-title">{% blocktranslate with region=wine.region.name %}More from {{ region }}{% endblocktranslate %}</h2>
+      </div>
+      <ul class="wine-grid">{% for wine in related %}<li>{% include "catalog/includes/wine_card.html" %}</li>{% endfor %}</ul>
+    </section>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktranslate with number=order.number shop=site.shop_name %}Your {{ shop }} order {{ number }} is confirmed{% endblocktranslate %}

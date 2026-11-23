@@ -1,0 +1,29 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Grapes" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <h1 class="mb-0">{% translate "Grapes" %}</h1>
+    <a class="btn" href="{% url 'team:grape_add' %}">{% icon "plus" %} {% translate "New grape" %}</a>
+  </div>
+  {% if grapes %}
+    <table class="table">
+      <thead><tr><th>{% translate "Grape" %}</th><th class="num">{% translate "Wines" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for grape in grapes %}
+          <tr>
+            <td class="table__primary"><a href="{% url 'team:grape_edit' grape.pk %}">{{ grape.name }}</a></td>
+            <td class="num" data-label="{% translate 'Wines' %}">{{ grape.wine_count }}</td>
+            <td class="table__actions">
+              <a class="btn btn--quiet btn--small" href="{% url 'team:grape_edit' grape.pk %}">{% icon "pencil" %} {% translate "Edit" %}</a>
+              <a class="btn btn--quiet btn--small" href="{% url 'team:grape_delete' grape.pk %}">{% icon "trash" _("Delete") %}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty"><p>{% translate "No grapes yet." %}</p><a class="btn" href="{% url 'team:grape_add' %}">{% translate "Add a grape" %}</a></div>
+  {% endif %}
+{% endblock %}

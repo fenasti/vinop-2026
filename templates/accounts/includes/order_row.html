@@ -1,0 +1,9 @@
+{% load i18n %}
+<li>
+  <a class="order-row" href="{% url 'accounts:order_detail' order.number %}">
+    <span class="order-row__number">{{ order.number }}</span>
+    <span class="nowrap">{{ order.total|money }}</span>
+    <span class="order-row__meta">{{ order.created_at|date:"j M Y" }}, {% blocktranslate count counter=order.bottle_count %}{{ counter }} bottle{% plural %}{{ counter }} bottles{% endblocktranslate %}</span>
+    <span><span class="pill pill--{{ order.status }}">{{ order.get_status_display }}</span></span>
+  </a>
+</li>

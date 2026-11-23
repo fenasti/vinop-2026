@@ -1,0 +1,34 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Regions" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <div>
+      <h1 class="mb-0">{% translate "Regions" %}</h1>
+      <p class="muted mb-0">{% translate "Sorted north to south by latitude, as on the homepage." %}</p>
+    </div>
+    <a class="btn" href="{% url 'team:region_add' %}">{% icon "plus" %} {% translate "New region" %}</a>
+  </div>
+  {% if regions %}
+    <table class="table">
+      <thead><tr><th>{% translate "Region" %}</th><th class="num">{% translate "Latitude" %}</th><th class="num">{% translate "Wineries" %}</th><th class="num">{% translate "Wines" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for region in regions %}
+          <tr>
+            <td class="table__primary"><a href="{% url 'team:region_edit' region.pk %}">{{ region.name }}</a></td>
+            <td class="num" data-label="{% translate 'Latitude' %}"><span class="latitude">{{ region.latitude_label }}</span></td>
+            <td class="num" data-label="{% translate 'Wineries' %}">{{ region.winery_count }}</td>
+            <td class="num" data-label="{% translate 'Wines' %}">{{ region.wine_count }}</td>
+            <td class="table__actions">
+              <a class="btn btn--quiet btn--small" href="{% url 'team:region_edit' region.pk %}">{% icon "pencil" %} {% translate "Edit" %}</a>
+              <a class="btn btn--quiet btn--small" href="{% url 'team:region_delete' region.pk %}">{% icon "trash" _("Delete") %}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty"><p>{% translate "No regions yet." %}</p><a class="btn" href="{% url 'team:region_add' %}">{% translate "Add a region" %}</a></div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Subscription confirmed" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <div class="empty">
+    <h1>{% translate "You're on the list" %}</h1>
+    <p>{% blocktranslate with email=subscriber.email %}We'll write to {{ email }} when a new shipment from Chile arrives. Every email has a link to unsubscribe.{% endblocktranslate %}</p>
+    <a class="btn" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+  </div>
+{% endblock %}

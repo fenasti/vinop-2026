@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Delivery address" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{% url 'accounts:overview' %}">{% icon "chevron-left" %} {% translate "Your account" %}</a>
+  <h1>{% translate "Delivery address" %}</h1>
+  <p class="muted">{% translate "We fill this in for you at checkout. You can still change it for a single order there." %}</p>
+  <form method="post" class="panel">
+    {% csrf_token %}
+    {{ form }}
+    <div class="btn-row">
+      <button class="btn" type="submit">{% translate "Save address" %}</button>
+      <a class="btn btn--quiet" href="{% url 'accounts:overview' %}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Unsubscribe" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <h1>{% translate "Unsubscribe from the newsletter?" %}</h1>
+  <p>{% blocktranslate with email=subscriber.email %}We'll stop emailing {{ email }} and delete the address.{% endblocktranslate %}</p>
+  <form method="post" class="btn-row">
+    {% csrf_token %}
+    <button class="btn" type="submit">{% translate "Unsubscribe" %}</button>
+    <a class="btn btn--quiet" href="{% url 'core:home' %}">{% translate "Stay subscribed" %}</a>
+  </form>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Something was wrong with that request" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+{% block content %}
+  <div class="empty">
+    <h1>{% translate "That didn't work" %}</h1>
+    <p>{% translate "The page received a request it couldn't understand. Go back and try again; if a form was open for a long time, reload it first." %}</p>
+    <a class="btn" href="{% url 'core:home' %}">{% translate "Go to the homepage" %}</a>
+  </div>
+{% endblock %}

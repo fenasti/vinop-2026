@@ -1,0 +1,16 @@
+{% load i18n %}
+{# Shown once by static/js/site.js until the visitor confirms (cookie for a year). #}
+<dialog id="age-gate" class="age-gate" aria-labelledby="age-gate-title">
+  <div data-age-question>
+    <h2 id="age-gate-title">{% translate "Are you 18 or older?" %}</h2>
+    <p>{% blocktranslate with shop=site.shop_name trimmed %}{{ shop }} sells wine, so you need to be of legal drinking age to visit.{% endblocktranslate %}</p>
+    <div class="btn-row">
+      <button class="btn" type="button" data-age-yes>{% translate "Yes, I'm 18 or older" %}</button>
+      <button class="btn btn--ghost" type="button" data-age-no>{% translate "No" %}</button>
+    </div>
+  </div>
+  <div data-age-sorry hidden>
+    <h2>{% translate "Come back when you're 18" %}</h2>
+    <p>{% translate "We can only show and sell wine to adults." %}</p>
+  </div>
+</dialog>

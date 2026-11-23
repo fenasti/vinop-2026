@@ -1,0 +1,9 @@
+{# A drawn bottle for wines without a photo yet. Glass and capsule colours follow the wine's style. #}
+<svg class="bottle bottle--{{ wine.style }}" viewBox="0 0 100 300" role="img" aria-label="{{ wine.full_name }}">
+  <path class="bottle__glass" d="M40 6h20v74c0 14 24 26 24 58v148a10 10 0 0 1-10 10H26a10 10 0 0 1-10-10V138c0-32 24-44 24-58Z"/>
+  <rect class="bottle__foil" x="38" y="2" width="24" height="46" rx="3"/>
+  <path class="bottle__shine" d="M22 150c0-17 7-29 13-35v172h-5a8 8 0 0 1-8-8Z"/>
+  <rect class="bottle__label" x="24" y="168" width="52" height="80" rx="2"/>
+  <text class="bottle__text" x="50" y="203" text-anchor="middle">{{ wine.vintage_label }}</text>
+  <text class="bottle__text bottle__text--small" x="50" y="225" text-anchor="middle">{{ wine.region.name|truncatechars:12 }}</text>
+</svg>

@@ -1,0 +1,7 @@
+{% load i18n %}
+{# Checkout progress. Pass step = 1, 2 or 3. #}
+<ol class="steps" aria-label="{% translate 'Checkout steps' %}">
+  <li {% if step == 1 %}aria-current="step"{% elif step > 1 %}class="is-done"{% endif %}>{% translate "Delivery" %}</li>
+  <li {% if step == 2 %}aria-current="step"{% elif step > 2 %}class="is-done"{% endif %}>{% translate "Payment" %}</li>
+  <li {% if step == 3 %}aria-current="step"{% endif %}>{% translate "Done" %}</li>
+</ol>

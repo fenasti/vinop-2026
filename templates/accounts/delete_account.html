@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Delete your account" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{% url 'accounts:overview' %}">{% icon "chevron-left" %} {% translate "Your account" %}</a>
+  <h1>{% translate "Delete your account" %}</h1>
+  <p>{% translate "This removes your login, saved address, wishlist and reviews. It can't be undone." %}</p>
+  <p class="muted">{% translate "Invoices for past orders are kept for as long as tax law requires (up to 10 years in Germany), but they're no longer linked to an account." %}</p>
+  <form method="post" class="panel">
+    {% csrf_token %}
+    {{ form }}
+    <div class="btn-row">
+      <button class="btn btn--danger" type="submit">{% translate "Delete my account" %}</button>
+      <a class="btn btn--quiet" href="{% url 'accounts:overview' %}">{% translate "Keep my account" %}</a>
+    </div>
+  </form>
+{% endblock %}

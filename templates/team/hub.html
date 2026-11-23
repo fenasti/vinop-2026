@@ -1,0 +1,42 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Team area" %}{% endblock %}
+
+{% block team_content %}
+  <header class="page-head">
+    <h1>{% blocktranslate with name=user.first_name|default:user.email %}Hello, {{ name }}{% endblocktranslate %}</h1>
+    <p>{% if user.is_superuser %}{% translate "You're an owner: every part of the team area is open to you." %}{% else %}{% blocktranslate with roles=roles|join:", " %}Your roles: {{ roles }}.{% endblocktranslate %}{% endif %}</p>
+  </header>
+
+  {% if "orders" in team_areas %}
+    <div class="stat-row" style="margin-bottom: var(--space-5)">
+      <div class="stat"><span class="stat__value">{{ attention.revenue_30d|money }}</span><span class="stat__label">{% translate "Paid in the last 30 days" %}</span></div>
+      <div class="stat"><span class="stat__value">{{ attention.orders_30d }}</span><span class="stat__label">{% translate "Orders in the last 30 days" %}</span></div>
+    </div>
+  {% endif %}
+
+  <div class="cards">
+    {% for card in cards %}
+      <a class="card-link" href="{{ card.url }}">
+        <span class="card-link__head">{% icon card.icon %} {{ card.title }}</span>
+        <p>{{ card.text }}</p>
+        {% if card.badge %}<span class="pill pill--paid">{{ card.badge }}</span>{% endif %}
+      </a>
+    {% endfor %}
+  </div>
+
+  {% if attention.low_stock %}
+    <section class="section" aria-labelledby="low-stock">
+      <div class="section__head"><h2 id="low-stock">{% translate "Running low" %}</h2><a href="{% url 'team:wines' %}?show=low">{% translate "All low-stock wines" %}</a></div>
+      <table class="table">
+        <thead><tr><th>{% translate "Wine" %}</th><th class="num">{% translate "Bottles left" %}</th></tr></thead>
+        <tbody>
+          {% for wine in attention.low_stock %}
+            <tr><td class="table__primary"><a href="{% url 'team:wine_edit' wine.pk %}">{{ wine.full_name }}</a></td>
+                <td class="num" data-label="{% translate 'Bottles left' %}">{{ wine.stock }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% endif %}
+{% endblock %}

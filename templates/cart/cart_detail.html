@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Your cart" %}{% endblock %}
+
+{% block content %}
+  <header class="page-head"><h1>{% translate "Your cart" %}</h1></header>
+
+  {% if cart %}
+    <div class="split">
+      <ul class="cart-lines">
+        {% for line in cart %}
+          <li class="cart-line">
+            <a class="cart-line__media" href="{{ line.wine.get_absolute_url }}" tabindex="-1" aria-hidden="true">
+              {% if line.wine.image %}<img src="{{ line.wine.image.url }}" alt="">{% else %}{% include "catalog/includes/bottle.html" with wine=line.wine %}{% endif %}
+            </a>
+            <div>
+              <p class="cart-line__name"><a href="{{ line.wine.get_absolute_url }}">{{ line.wine.full_name }}</a></p>
+              <p class="cart-line__meta">{% blocktranslate with price=line.wine.price|money %}{{ price }} per bottle{% endblocktranslate %}</p>
+            </div>
+            <div class="cart-line__controls">
+              <form action="{% url 'cart:update' line.wine.pk %}" method="post" data-autosubmit>
+                {% csrf_token %}
+                {% include "includes/qty_stepper.html" with input_id=line.wine.pk|stringformat:"s"|add:"-qty" value=line.quantity min=0 max=line.wine.max_orderable label=line.wine.full_name %}
+                <button class="btn btn--ghost btn--small" type="submit" data-autosubmit-hide>{% translate "Update" %}</button>
+              </form>
+              <span class="cart-line__total">{{ line.total|money }}</span>
+              <form action="{% url 'cart:remove' line.wine.pk %}" method="post">
+                {% csrf_token %}
+                <button class="icon-btn" type="submit">{% icon "trash" _("Remove from cart") %}</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <aside class="split__aside panel" aria-label="{% translate 'Order summary' %}">
+        {% include "cart/includes/summary.html" %}
+        <div class="stack" style="margin-top: var(--space-5)">
+          <a class="btn btn--block" href="{% url 'orders:checkout' %}">{% icon "lock" %} {% translate "Go to checkout" %}</a>
+          <a class="btn btn--quiet btn--block" href="{% url 'catalog:list' %}">{% translate "Keep browsing" %}</a>
+        </div>
+      </aside>
+    </div>
+  {% else %}
+    <div class="empty">
+      <h2>{% translate "Your cart is empty" %}</h2>
+      <p>{% translate "Find a bottle from the Elqui desert to the south of Malleco." %}</p>
+      <a class="btn" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}

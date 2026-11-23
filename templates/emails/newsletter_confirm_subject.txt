@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktranslate with shop=site.shop_name %}Please confirm your {{ shop }} newsletter subscription{% endblocktranslate %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% if selected_region %}{{ selected_region.name }}{% else %}{% translate "All wines" %}{% endif %}{% endblock %}
+
+{% block content %}
+  <header class="page-head">
+    {% if selected_region %}
+      <h1>{{ selected_region.name }} <span class="latitude">{{ selected_region.latitude_label }}</span></h1>
+      {% if selected_region.description %}<p>{{ selected_region.description }}</p>{% endif %}
+    {% else %}
+      <h1>{% translate "The wines" %}</h1>
+      <p>{% translate "Every bottle comes from a small Chilean producer and ships from our EU warehouse." %}</p>
+    {% endif %}
+  </header>
+
+  <div class="catalog">
+    <details class="filters" {% if form.active_count %}open{% endif %}>
+      <summary>
+        {% icon "sliders" %} {% translate "Filters" %}
+        {% if form.active_count %}<span class="pill pill--paid">{{ form.active_count }}</span>{% endif %}
+        <span class="filters__toggle-hint muted small">{% translate "tap to open" %}</span>
+      </summary>
+      <form class="filters__body" method="get">
+        {% for field in form %}{{ field.as_field_group }}{% endfor %}
+        <div class="btn-row">
+          <button class="btn" type="submit">{% translate "Show wines" %}</button>
+          {% if form.active_count %}<a class="btn btn--quiet" href="{% url 'catalog:list' %}">{% translate "Clear all" %}</a>{% endif %}
+        </div>
+      </form>
+    </details>
+
+    <div>
+      <div class="catalog__toolbar">
+        <p>{% blocktranslate count counter=page.paginator.count %}{{ counter }} wine{% plural %}{{ counter }} wines{% endblocktranslate %}</p>
+      </div>
+
+      {% if wines %}
+        <ul class="wine-grid">
+          {% for wine in wines %}<li>{% include "catalog/includes/wine_card.html" %}</li>{% endfor %}
+        </ul>
+        {% include "includes/pagination.html" %}
+      {% else %}
+        <div class="empty">
+          <h2>{% translate "No wines match those filters" %}</h2>
+          <p>{% translate "Try another region or grape, or remove a filter." %}</p>
+          <a class="btn btn--ghost" href="{% url 'catalog:list' %}">{% translate "Show all wines" %}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

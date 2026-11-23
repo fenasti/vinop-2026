@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Checkout" %}{% endblock %}
+
+{% block content %}
+  {% include "orders/includes/steps.html" with step=1 %}
+  <h1>{% translate "Where should we deliver?" %}</h1>
+  {% if not user.is_authenticated %}
+    {% url 'account_login' as login_url %}
+    <p class="muted">{% blocktranslate trimmed with next=request.path|urlencode %}
+      Checking out as a guest is fine. Have an account? <a href="{{ login_url }}?next={{ next }}">Log in</a> to use your saved address.
+    {% endblocktranslate %}</p>
+  {% endif %}
+
+  <div class="split">
+    <form method="post">
+      {% csrf_token %}
+      {% if form.non_field_errors %}<div class="form-errors" role="alert">{{ form.non_field_errors }}</div>{% endif %}
+
+      <fieldset class="group">
+        <legend>{% translate "Contact" %}</legend>
+        {% for field in form.contact_fields %}{{ field.as_field_group }}{% endfor %}
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>{% translate "Delivery address" %}</legend>
+        <div class="form-grid form-grid--2">
+          {% for field in form.address_fields %}
+            <div class="{% if field.name == 'full_name' or field.name == 'street_address1' or field.name == 'street_address2' %}span-2{% endif %}">{{ field.as_field_group }}</div>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      <fieldset class="group">
+        <legend>{% translate "Before you pay" %}</legend>
+        {% for field in form.confirmation_fields %}{{ field.as_field_group }}{% endfor %}
+      </fieldset>
+
+      <button class="btn btn--block" type="submit">{% translate "Continue to payment" %}</button>
+      <p class="secure-note">{% icon "lock" %} {% translate "You'll review the total and pay on the next step." %}</p>
+    </form>
+
+    <aside class="split__aside panel" aria-label="{% translate 'Order summary' %}">
+      <h2>{% translate "Your order" %}</h2>
+      <ul class="summary__items">
+        {% for line in cart %}<li><span>{{ line.quantity }} × {{ line.wine.full_name }}</span><span class="nowrap">{{ line.total|money }}</span></li>{% endfor %}
+      </ul>
+      {% include "cart/includes/summary.html" %}
+      <a class="btn btn--quiet btn--small" href="{% url 'cart:detail' %}" style="margin-top: var(--space-3)">{% translate "Change the cart" %}</a>
+    </aside>
+  </div>
+{% endblock %}

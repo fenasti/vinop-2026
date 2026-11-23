@@ -1,0 +1,82 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}{% endblock %}
+
+{% block team_content %}
+  <a class="back-link" href="{% url 'team:orders' %}">{% icon "chevron-left" %} {% translate "All orders" %}</a>
+  <h1>{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}</h1>
+  <div class="order-status">
+    <span class="pill pill--{{ order.status }}">{{ order.get_status_display }}</span>
+    {% if order.invoice_number %}<span class="small muted">{% blocktranslate with invoice=order.invoice_number %}Invoice no. {{ invoice }}{% endblocktranslate %}</span>{% endif %}
+    <span class="small muted">{% blocktranslate with date=order.created_at|date:"j F Y, H:i" %}Placed {{ date }}{% endblocktranslate %}</span>
+  </div>
+
+  {% if order.staff_note %}<div class="note-box" style="margin-bottom: var(--space-4)">{{ order.staff_note }}</div>{% endif %}
+
+  <div class="split">
+    <div>
+      <section class="panel">
+        <h2>{% translate "Wines" %}</h2>
+        {% include "orders/includes/order_summary.html" %}
+        {% if order.customer_note %}<p style="margin-top: var(--space-4)"><strong>{% translate "Customer note" %}:</strong> {{ order.customer_note }}</p>{% endif %}
+      </section>
+
+      <section class="panel">
+        <h2>{% translate "Shipping" %}</h2>
+        {% if order.can_ship %}
+          <form method="post" action="{% url 'team:order_ship' order.number %}">
+            {% csrf_token %}
+            <div class="form-grid form-grid--2">{{ ship_form }}</div>
+            <button class="btn" type="submit">{% icon "truck" %} {% translate "Mark as shipped and email the customer" %}</button>
+          </form>
+        {% elif order.status == "shipped" %}
+          <p>{% blocktranslate with carrier=order.carrier date=order.shipped_at|date:"j F, H:i" %}Shipped with {{ carrier }} on {{ date }}.{% endblocktranslate %}
+            {% if order.tracking_number %}{% translate "Tracking" %}: <strong>{{ order.tracking_number }}</strong>{% endif %}</p>
+          <form method="post" action="{% url 'team:order_delivered' order.number %}">
+            {% csrf_token %}<button class="btn btn--ghost" type="submit">{% icon "check" %} {% translate "Mark as delivered" %}</button>
+          </form>
+        {% elif order.status == "delivered" %}
+          <p>{% translate "Delivered." %} {% if order.tracking_number %}{% translate "Tracking" %}: {{ order.tracking_number }}{% endif %}</p>
+        {% elif order.is_pending %}
+          <p class="muted">{% translate "Waiting for the payment. Don't ship until the order shows as paid." %}</p>
+        {% else %}
+          <p class="muted">{% translate "This order is closed." %}</p>
+        {% endif %}
+      </section>
+    </div>
+
+    <aside class="split__aside">
+      <section class="panel">
+        <h2>{% translate "Customer" %}</h2>
+        <address class="address">{% for line in order.address_lines %}{{ line }}<br>{% endfor %}</address>
+        <dl class="dl-list" style="margin-top: var(--space-3)">
+          <dt>{% translate "Email" %}</dt><dd><a href="mailto:{{ order.email }}?subject={{ order.number }}">{{ order.email }}</a></dd>
+          <dt>{% translate "Phone" %}</dt><dd><a href="tel:{{ order.phone }}">{{ order.phone }}</a></dd>
+          <dt>{% translate "Account" %}</dt><dd>{% if order.user %}{% translate "Yes" %}{% else %}{% translate "Guest" %}{% endif %}</dd>
+          <dt>{% translate "18+ confirmed" %}</dt><dd>{{ order.age_confirmed|yesno:_("Yes,No") }}</dd>
+          {% if order.paid_at %}<dt>{% translate "Paid" %}</dt><dd>{{ order.paid_at|date:"j M Y, H:i" }}</dd>{% endif %}
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>{% translate "Internal note" %}</h2>
+        <form method="post" action="{% url 'team:order_note' order.number %}">
+          {% csrf_token %}
+          {{ note_form }}
+          <button class="btn btn--ghost btn--small" type="submit">{% translate "Save note" %}</button>
+        </form>
+      </section>
+
+      {% if order.can_cancel %}
+        <section class="panel">
+          <h2>{% translate "Cancel order" %}</h2>
+          <p class="small muted">{% if order.is_paid %}{% translate "Puts the bottles back in stock. You then refund the payment in the Stripe dashboard." %}{% else %}{% translate "Stops the customer from paying for this order." %}{% endif %}</p>
+          <form method="post" action="{% url 'team:order_cancel' order.number %}">
+            {% csrf_token %}
+            <button class="btn btn--danger btn--small" type="submit" data-confirm="{% translate 'Cancel this order?' %}">{% translate "Cancel order" %}</button>
+          </form>
+        </section>
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}

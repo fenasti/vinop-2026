@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% blocktranslate with wine=wine.full_name %}Review {{ wine }}{% endblocktranslate %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{{ wine.get_absolute_url }}">{% icon "chevron-left" %} {{ wine.full_name }}</a>
+  <h1>{% if review %}{% translate "Edit your review" %}{% else %}{% translate "Write a review" %}{% endif %}</h1>
+  <p class="muted">{% blocktranslate with name=user.first_name|default:user.email %}It will be shown with your first name or the start of your email ({{ name }}).{% endblocktranslate %}</p>
+  <form method="post" class="panel">
+    {% csrf_token %}
+    {{ form }}
+    <div class="btn-row">
+      <button class="btn" type="submit">{% if review %}{% translate "Save review" %}{% else %}{% translate "Publish review" %}{% endif %}</button>
+      <a class="btn btn--quiet" href="{{ wine.get_absolute_url }}">{% translate "Cancel" %}</a>
+    </div>
+  </form>
+{% endblock %}

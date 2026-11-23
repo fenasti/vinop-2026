@@ -1,0 +1,22 @@
+{% load i18n %}
+{# One form field: label, input, help text, errors. Used by {{ form }} and {{ field.as_field_group }}. #}
+{% with kind=field.widget_type %}
+<div class="field{% if field.errors %} field--error{% endif %}{% if kind == 'checkbox' %} field--check{% endif %}{% if kind == 'checkboxselectmultiple' %} field--choices-wide{% endif %}">
+  {% if kind == "checkbox" %}
+    {{ field }}<label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% elif field.use_fieldset %}
+    <fieldset>
+      <legend>{{ field.label }}{% if not field.field.required %} <span class="muted">({% translate "optional" %})</span>{% endif %}</legend>
+      {{ field }}
+    </fieldset>
+  {% else %}
+    {% if field.label %}<label for="{{ field.id_for_label }}">{{ field.label }}{% if not field.field.required %} <span class="muted">({% translate "optional" %})</span>{% endif %}</label>{% endif %}
+    {{ field }}
+  {% endif %}
+  {% if field.help_text %}<p class="field__help" id="{{ field.auto_id }}_helptext">{{ field.help_text|safe }}</p>{% endif %}
+  {% if field.errors %}
+    {# Django links the input to this id with aria-describedby, so screen readers announce the error. #}
+    <div class="field__error" id="{{ field.auto_id }}_error">{% for error in field.errors %}<p class="mb-0">{{ error }}</p>{% endfor %}</div>
+  {% endif %}
+</div>
+{% endwith %}

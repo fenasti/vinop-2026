@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block main_class %}page--wide{% endblock %}
+
+{% block content %}
+<div class="team">
+  <nav class="team-nav" aria-label="{% translate 'Team area' %}">
+    <a href="{% url 'team:hub' %}" {% if team_section == "hub" %}aria-current="page"{% endif %}>{% icon "grid" %} {% translate "Overview" %}</a>
+
+    {% if "orders" in team_areas %}
+      <span class="team-nav__label">{% translate "Sales" %}</span>
+      <a href="{% url 'team:orders' %}" {% if team_section == "orders" %}aria-current="page"{% endif %}>{% icon "package" %} {% translate "Orders" %}</a>
+    {% endif %}
+
+    {% if "catalog" in team_areas %}
+      <span class="team-nav__label">{% translate "Cellar" %}</span>
+      <a href="{% url 'team:wines' %}" {% if team_section == "wines" %}aria-current="page"{% endif %}>{% icon "wine" %} {% translate "Wines" %}</a>
+      <a href="{% url 'team:wineries' %}" {% if team_section == "wineries" %}aria-current="page"{% endif %}>{% icon "home" %} {% translate "Wineries" %}</a>
+      <a href="{% url 'team:regions' %}" {% if team_section == "regions" %}aria-current="page"{% endif %}>{% icon "map-pin" %} {% translate "Regions" %}</a>
+      <a href="{% url 'team:grapes' %}" {% if team_section == "grapes" %}aria-current="page"{% endif %}>{% icon "grape" %} {% translate "Grapes" %}</a>
+    {% endif %}
+
+    {% if "reviews" in team_areas or "newsletter" in team_areas %}
+      <span class="team-nav__label">{% translate "Customers" %}</span>
+      {% if "reviews" in team_areas %}<a href="{% url 'team:reviews' %}" {% if team_section == "reviews" %}aria-current="page"{% endif %}>{% icon "star" %} {% translate "Reviews" %}</a>{% endif %}
+      {% if "newsletter" in team_areas %}<a href="{% url 'team:subscribers' %}" {% if team_section == "subscribers" %}aria-current="page"{% endif %}>{% icon "mail" %} {% translate "Newsletter" %}</a>{% endif %}
+    {% endif %}
+
+    {% if "studio" in team_areas or "pages" in team_areas or "members" in team_areas %}
+      <span class="team-nav__label">{% translate "Shop" %}</span>
+      {% if "studio" in team_areas %}<a href="{% url 'team:studio' %}" {% if team_section == "studio" %}aria-current="page"{% endif %}>{% icon "palette" %} {% translate "Studio" %}</a>{% endif %}
+      {% if "pages" in team_areas %}<a href="{% url 'team:pages' %}" {% if team_section == "pages" %}aria-current="page"{% endif %}>{% icon "file-text" %} {% translate "Legal pages" %}</a>{% endif %}
+      {% if "members" in team_areas %}<a href="{% url 'team:members' %}" {% if team_section == "members" %}aria-current="page"{% endif %}>{% icon "users" %} {% translate "Team & roles" %}</a>{% endif %}
+    {% endif %}
+
+    <a href="{% url 'core:home' %}">{% icon "store" %} {% translate "View the shop" %}</a>
+  </nav>
+
+  <div>{% block team_content %}{% endblock %}</div>
+</div>
+{% endblock %}

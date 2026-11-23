@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}{% endblock %}
+
+{% block content %}
+  {% include "orders/includes/steps.html" with step=3 %}
+
+  {% if order.is_paid %}
+    <h1>{% translate "Thank you! Your wine is on its way to being packed." %}</h1>
+    <p>{% blocktranslate trimmed with number=order.number email=order.email %}
+      Your order number is <strong>{{ number }}</strong>. We've sent a confirmation to {{ email }}
+      and will email you again with tracking as soon as it ships.
+    {% endblocktranslate %}</p>
+  {% elif order.is_pending %}
+    <h1>{% translate "We're waiting for your bank to confirm" %}</h1>
+    <p>{% blocktranslate trimmed with number=order.number email=order.email %}
+      Some payment methods, like SEPA Direct Debit, take a few days. Your order <strong>{{ number }}</strong> is saved,
+      and we'll email {{ email }} the moment the payment is confirmed. There's nothing else you need to do.
+    {% endblocktranslate %}</p>
+  {% else %}
+    <h1>{% blocktranslate with number=order.number %}Order {{ number }}{% endblocktranslate %}</h1>
+    <p><span class="pill pill--{{ order.status }}">{{ order.get_status_display }}</span></p>
+  {% endif %}
+
+  <div class="split" style="margin-top: var(--space-5)">
+    <div class="panel">
+      <h2>{% translate "What you ordered" %}</h2>
+      {% include "orders/includes/order_summary.html" %}
+    </div>
+    <div class="panel">
+      <h2>{% translate "Delivery address" %}</h2>
+      <address class="address">{% for line in order.address_lines %}{{ line }}<br>{% endfor %}</address>
+      {% if user.is_authenticated and order.user_id == user.pk %}
+        <p style="margin-top: var(--space-4)"><a href="{% url 'accounts:orders' %}">{% translate "See all your orders" %}</a></p>
+      {% elif not user.is_authenticated %}
+        {% url 'account_signup' as signup_url %}
+        <p class="small muted" style="margin-top: var(--space-4)">{% blocktranslate trimmed with email=order.email %}
+          Want to track your orders next time? <a href="{{ signup_url }}">Create an account</a> with {{ email }}.
+        {% endblocktranslate %}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <p style="margin-top: var(--space-6)"><a class="btn btn--ghost" href="{% url 'catalog:list' %}">{% translate "Back to the wines" %}</a></p>
+{% endblock %}

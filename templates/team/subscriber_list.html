@@ -1,0 +1,35 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Newsletter" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <div>
+      <h1 class="mb-0">{% translate "Newsletter" %}</h1>
+      <p class="muted mb-0">{% translate "Only confirmed addresses may be emailed. Each export row includes the person's unsubscribe link." %}</p>
+    </div>
+    <a class="btn btn--ghost" href="{% url 'team:subscriber_export' %}">{% icon "download" %} {% translate "Export confirmed (CSV)" %}</a>
+  </div>
+  <nav class="tabs" aria-label="{% translate 'Filter subscribers' %}">
+    {% for key, label in tabs %}<a href="?show={{ key }}" {% if show == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+
+  {% if page.object_list %}
+    <table class="table">
+      <thead><tr><th>{% translate "Email" %}</th><th>{% translate "Signed up" %}</th><th>{% translate "Confirmed" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for subscriber in page.object_list %}
+          <tr>
+            <td class="table__primary">{{ subscriber.email }}</td>
+            <td data-label="{% translate 'Signed up' %}">{{ subscriber.created_at|date:"j M Y" }}</td>
+            <td data-label="{% translate 'Confirmed' %}">{% if subscriber.is_confirmed %}{{ subscriber.confirmed_at|date:"j M Y" }}{% else %}<span class="pill pill--pending">{% translate "Not yet" %}</span>{% endif %}</td>
+            <td class="table__actions"><a class="btn btn--quiet btn--small" href="{% url 'team:subscriber_delete' subscriber.pk %}">{% icon "trash" %} {% translate "Remove" %}</a></td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "includes/pagination.html" %}
+  {% else %}
+    <div class="empty"><p>{% translate "Nobody in this view yet." %}</p></div>
+  {% endif %}
+{% endblock %}

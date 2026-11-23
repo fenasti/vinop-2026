@@ -1,0 +1,16 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% blocktranslate with thing=object %}Delete {{ thing }}{% endblocktranslate %}{% endblock %}
+
+{% block team_content %}
+  <div class="panel" style="max-width: 36rem">
+    <h1>{% blocktranslate with thing=object %}Delete “{{ thing }}”?{% endblocktranslate %}</h1>
+    <p>{% blocktranslate with kind=verbose_name %}This {{ kind }} will be deleted permanently.{% endblocktranslate %}</p>
+    {% if consequence %}<p class="muted">{{ consequence }}</p>{% endif %}
+    <form method="post" class="btn-row">
+      {% csrf_token %}
+      <button class="btn btn--danger" type="submit">{% icon "trash" %} {% translate "Delete permanently" %}</button>
+      <a class="btn btn--quiet" href="{{ cancel_url }}">{% translate "Cancel" %}</a>
+    </form>
+  </div>
+{% endblock %}

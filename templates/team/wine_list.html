@@ -1,0 +1,69 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Wines" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <h1 class="mb-0">{% translate "Wines" %}</h1>
+    <a class="btn" href="{% url 'team:wine_add' %}">{% icon "plus" %} {% translate "New wine" %}</a>
+  </div>
+
+  <nav class="tabs" aria-label="{% translate 'Filter wines' %}">
+    {% for key, label in tabs %}<a href="?show={{ key }}{% if query %}&q={{ query|urlencode }}{% endif %}" {% if show == key %}aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+
+  <div class="toolbar">
+    <form class="search" method="get" role="search">
+      <input type="hidden" name="show" value="{{ show }}">
+      <label class="visually-hidden" for="wine-q">{% translate "Search wines" %}</label>
+      <input id="wine-q" type="search" name="q" value="{{ query }}" placeholder="{% translate 'Wine or winery' %}">
+      <button class="btn btn--ghost" type="submit">{% icon "search" _("Search") %}</button>
+    </form>
+  </div>
+
+  {% if page.object_list %}
+    <table class="table">
+      <thead><tr><th>{% translate "Wine" %}</th><th class="num">{% translate "Price" %}</th><th class="num">{% translate "Stock" %}</th><th>{% translate "Status" %}</th><th><span class="visually-hidden">{% translate "Actions" %}</span></th></tr></thead>
+      <tbody>
+        {% for wine in page.object_list %}
+          <tr {% if not wine.is_active %}class="is-muted"{% endif %}>
+            <td class="table__primary">
+              <a href="{% url 'team:wine_edit' wine.pk %}">{{ wine.winery.name }} {{ wine.name }} {{ wine.vintage_label }}</a>
+              <div class="small muted">{{ wine.get_style_display }}, {{ wine.region.name }}{% if wine.is_featured %}, {% translate "on the homepage" %}{% endif %}</div>
+            </td>
+            <td class="num" data-label="{% translate 'Price' %}">{{ wine.price|money }}</td>
+            <td data-label="{% translate 'Stock' %}">
+              <form class="stock-form" action="{% url 'team:wine_stock' wine.pk %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <label class="visually-hidden" for="stock-{{ wine.pk }}">{% blocktranslate with wine=wine.name %}Bottles of {{ wine }} in stock{% endblocktranslate %}</label>
+                <input id="stock-{{ wine.pk }}" type="number" name="stock" min="0" value="{{ wine.stock }}" inputmode="numeric">
+                <button class="btn btn--ghost btn--small" type="submit">{% translate "Set" %}</button>
+              </form>
+            </td>
+            <td data-label="{% translate 'Status' %}">
+              {% if not wine.is_active %}<span class="pill pill--muted">{% translate "Hidden" %}</span>
+              {% elif not wine.stock %}<span class="pill pill--danger">{% translate "Sold out" %}</span>
+              {% elif wine.is_low_stock %}<span class="pill pill--pending">{% translate "Low" %}</span>
+              {% else %}<span class="pill pill--delivered">{% translate "In the shop" %}</span>{% endif %}
+            </td>
+            <td class="table__actions">
+              <a class="btn btn--quiet btn--small" href="{{ wine.get_absolute_url }}" target="_blank">{% icon "eye" _("View") %}</a>
+              <form action="{% url 'team:wine_toggle' wine.pk %}" method="post">
+                {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+                <button class="btn btn--quiet btn--small" type="submit">{% if wine.is_active %}{% icon "eye-off" %} {% translate "Hide" %}{% else %}{% icon "eye" %} {% translate "Show" %}{% endif %}</button>
+              </form>
+              <a class="btn btn--quiet btn--small" href="{% url 'team:wine_delete' wine.pk %}">{% icon "trash" _("Delete") %}</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "includes/pagination.html" %}
+  {% else %}
+    <div class="empty">
+      <p>{% if query %}{% translate "No wines match that search." %}{% else %}{% translate "No wines here yet." %}{% endif %}</p>
+      <a class="btn" href="{% url 'team:wine_add' %}">{% translate "Add a wine" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}

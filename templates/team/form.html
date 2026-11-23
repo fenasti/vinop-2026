@@ -1,0 +1,17 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{{ title }}{% endblock %}
+
+{% block team_content %}
+  <a class="back-link" href="{{ cancel_url }}">{% icon "chevron-left" %} {% translate "Back to the list" %}</a>
+  <h1>{{ title }}</h1>
+  <form method="post" enctype="multipart/form-data" class="panel" style="max-width: 46rem">
+    {% csrf_token %}
+    {{ form }}
+    <div class="btn-row">
+      <button class="btn" type="submit">{% if object %}{% translate "Save changes" %}{% else %}{% translate "Create" %}{% endif %}</button>
+      <a class="btn btn--quiet" href="{{ cancel_url }}">{% translate "Cancel" %}</a>
+      {% if object.get_absolute_url %}<a class="btn btn--quiet" href="{{ object.get_absolute_url }}" target="_blank">{% icon "eye" %} {% translate "See it in the shop" %}</a>{% endif %}
+    </div>
+  </form>
+{% endblock %}

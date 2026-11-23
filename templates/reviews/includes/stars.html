@@ -1,0 +1,9 @@
+{% load i18n %}
+{# {% include "reviews/includes/stars.html" with rating=4.5 %} — rounds to whole stars. #}
+{% with rounded=rating|floatformat:0|add:0 %}
+<span class="stars" role="img" aria-label="{% blocktranslate with value=rating|floatformat:1 %}{{ value }} out of 5 stars{% endblocktranslate %}">
+  {% for n in "12345" %}
+    <svg class="icon{% if forloop.counter <= rounded %} icon--filled{% endif %}" aria-hidden="true"><use href="#i-star"></use></svg>
+  {% endfor %}
+</span>
+{% endwith %}

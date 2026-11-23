@@ -1,0 +1,8 @@
+{% load i18n %}
+{# Usage: {% include "includes/qty_stepper.html" with input_id="qty-12" value=1 min=1 max=wine.max_orderable label=wine.full_name %} #}
+<div class="stepper" data-stepper>
+  <button class="stepper__btn" type="button" data-step="-1">{% icon "minus" _("One bottle fewer") %}</button>
+  <label class="visually-hidden" for="{{ input_id }}">{% blocktranslate %}Bottles of {{ label }}{% endblocktranslate %}</label>
+  <input id="{{ input_id }}" type="number" name="quantity" value="{{ value }}" min="{{ min }}" max="{{ max }}" inputmode="numeric">
+  <button class="stepper__btn" type="button" data-step="1">{% icon "plus" _("One bottle more") %}</button>
+</div>

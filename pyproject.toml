@@ -1,0 +1,18 @@
+[project]
+name = "vinop"
+version = "2026.1"
+description = "VinOp – Chilean wines for Europe. Django 5.2 + Stripe."
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "B", "UP", "I", "DJ"]
+ignore = ["E501"]  # long user-facing sentences are easier to read and translate in one piece
+
+[tool.black]
+line-length = 120
+target-version = ["py312"]

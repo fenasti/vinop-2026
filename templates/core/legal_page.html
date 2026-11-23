@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ page.title }}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+{% block content %}
+  <article class="prose">
+    <h1>{{ page.title }}</h1>
+    {{ page.body|linebreaks }}
+    <p class="small muted">{% blocktranslate with date=page.updated_at|date:"j F Y" %}Last updated {{ date }}{% endblocktranslate %}</p>
+  </article>
+{% endblock %}

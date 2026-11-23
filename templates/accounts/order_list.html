@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Your orders" %}{% endblock %}
+{% block main_class %}page--narrow{% endblock %}
+
+{% block content %}
+  <a class="back-link" href="{% url 'accounts:overview' %}">{% icon "chevron-left" %} {% translate "Your account" %}</a>
+  <h1>{% translate "Your orders" %}</h1>
+  {% if orders %}
+    <ul class="order-list">{% for order in orders %}{% include "accounts/includes/order_row.html" %}{% endfor %}</ul>
+  {% else %}
+    <div class="empty">
+      <p>{% translate "You haven't ordered anything yet." %}</p>
+      <a class="btn" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,52 @@
+{% load static i18n %}{% get_current_language as LANGUAGE_CODE %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block head_title %}{{ site.tagline }}{% endblock %} | {{ site.shop_name }}</title>
+  <meta name="description" content="{% block meta_description %}{{ site.tagline }}{% endblock %}">
+  <meta name="theme-color" content="{{ site.color_background }}">
+  {% if site.favicon %}<link rel="icon" href="{{ site.favicon.url }}">{% else %}<link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">{% endif %}
+  {% if site.google_fonts_url %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="{{ site.google_fonts_url }}">
+  {% endif %}
+  <style>
+    /* Set in the Studio (/team/studio/) */
+    :root {
+      --c-bg: {{ site.color_background }};
+      --c-surface: {{ site.color_surface }};
+      --c-text: {{ site.color_text }};
+      --c-primary: {{ site.color_primary }};
+      --c-secondary: {{ site.color_secondary }};
+      --font-head: {{ site.heading_font_stack|safe }};
+      --font-body: {{ site.body_font_stack|safe }};
+    }
+  </style>
+  <link rel="stylesheet" href="{% static 'css/vinop.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% include "includes/icon_sprite.html" %}
+  <a class="skip-link" href="#main">{% translate "Skip to content" %}</a>
+
+  {% if site.announcement_enabled and site.announcement_text %}
+    <div class="announcement">{{ site.announcement_text }}</div>
+  {% endif %}
+
+  {% include "includes/header.html" %}
+  {% include "includes/messages.html" %}
+
+  <main id="main" class="page {% block main_class %}{% endblock %}">
+    {% block before_content %}{% endblock %}
+    {% block content %}{% endblock %}
+  </main>
+
+  {% include "includes/footer.html" %}
+  {% include "includes/age_gate.html" %}
+
+  <script src="{% static 'js/site.js' %}" defer></script>
+  {% block extra_body %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{{ site.tagline }}{% endblock %}
+
+{% block content %}
+  <section class="hero" aria-labelledby="hero-title">
+    <div>
+      <h1 id="hero-title" class="hero__title">{{ site.hero_title }}</h1>
+      <p class="hero__text">{{ site.hero_text }}</p>
+      <div class="btn-row">
+        <a class="btn" href="{% url 'catalog:list' %}">{{ site.hero_cta }}</a>
+        <a class="btn btn--ghost" href="{% url 'catalog:list' %}?sort=north">{% translate "Explore north to south" %}</a>
+      </div>
+    </div>
+
+    {% if regions %}
+      <div>
+        <ol class="ribbon" aria-label="{% translate 'Wine valleys of Chile, from north to south' %}">
+          {% for region in regions %}
+            <li class="ribbon__item" style="--gap: {{ region.gap|stringformat:'s' }}">
+              <a class="ribbon__link" href="{{ region.get_absolute_url }}">
+                <span class="ribbon__lat">{{ region.latitude_label }}</span>
+                <span class="ribbon__name">{{ region.name }}</span>
+                <span class="ribbon__count">{% blocktranslate count counter=region.wine_count %}{{ counter }} wine{% plural %}{{ counter }} wines{% endblocktranslate %}</span>
+              </a>
+            </li>
+          {% endfor %}
+        </ol>
+        <p class="ribbon-caption">{% translate "Spaced by latitude, as the valleys lie along the Andes." %}</p>
+      </div>
+    {% endif %}
+
+    {% if site.hero_image %}
+      <figure class="hero__photo"><img src="{{ site.hero_image.url }}" alt=""></figure>
+    {% endif %}
+  </section>
+
+  <section class="section facts-row" aria-label="{% translate 'How ordering works' %}">
+    <div class="facts-row__item">
+      {% icon "truck" %}
+      <p><strong>{% blocktranslate with amount=cart.free_shipping_threshold|money %}Free delivery from {{ amount }}{% endblocktranslate %}</strong>
+        {% blocktranslate count counter=country_count %}We deliver to {{ counter }} country.{% plural %}We deliver to {{ counter }} European countries.{% endblocktranslate %}</p>
+    </div>
+    <div class="facts-row__item">
+      {% icon "package" %}
+      <p><strong>{% translate "Duty and VAT included" %}</strong>
+        {% translate "The price you see is the price you pay. No customs fees at your door." %}</p>
+    </div>
+    <div class="facts-row__item">
+      {% icon "lock" %}
+      <p><strong>{% translate "Pay the way you like" %}</strong>
+        {% translate "Card, Apple Pay, Google Pay, SEPA and local methods, secured by Stripe." %}</p>
+    </div>
+  </section>
+
+  {% if featured %}
+    <section class="section" aria-labelledby="featured-title">
+      <div class="section__head">
+        <h2 id="featured-title">{% translate "In the cellar now" %}</h2>
+        <a href="{% url 'catalog:list' %}">{% translate "See all wines" %}</a>
+      </div>
+      <ul class="wine-grid">
+        {% for wine in featured %}<li>{% include "catalog/includes/wine_card.html" %}</li>{% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <section class="section signup" aria-labelledby="signup-title">
+    <div>
+      <h2 id="signup-title">{% translate "Hear about each new shipment" %}</h2>
+      <p>{% translate "A short email when a new container from Chile lands. Small harvests go fast." %}</p>
+    </div>
+    <div>{% include "includes/newsletter_form.html" with field_id="home-email" %}</div>
+  </section>
+{% endblock %}

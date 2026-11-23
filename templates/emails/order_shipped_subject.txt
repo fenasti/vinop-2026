@@ -1,0 +1,1 @@
+{% load i18n %}{% blocktranslate with number=order.number %}Your order {{ number }} is on its way{% endblocktranslate %}

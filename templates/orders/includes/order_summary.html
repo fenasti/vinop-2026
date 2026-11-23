@@ -1,0 +1,13 @@
+{% load i18n %}
+{# What was (or is being) bought, from the order's own snapshot. Pass `order`. #}
+<ul class="summary__items">
+  {% for item in order.items.all %}
+    <li><span>{{ item.quantity }} × {{ item.wine_name }}</span><span class="nowrap">{{ item.line_total|money }}</span></li>
+  {% endfor %}
+</ul>
+<div class="summary">
+  <div class="summary__row"><span>{% translate "Subtotal" %}</span><span>{{ order.subtotal|money }}</span></div>
+  <div class="summary__row"><span>{% translate "Delivery" %}</span><span>{% if order.shipping_cost %}{{ order.shipping_cost|money }}{% else %}{% translate "Free" %}{% endif %}</span></div>
+  <div class="summary__row summary__row--total"><span>{% translate "Total" %}</span><span>{{ order.total|money }}</span></div>
+  <p class="summary__note">{% translate "Prices include VAT." %}</p>
+</div>

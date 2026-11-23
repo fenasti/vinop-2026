@@ -1,0 +1,14 @@
+{% load i18n %}{% autoescape off %}{% translate "A new order has been paid and is ready to pack." %}
+
+{{ order.number }}, {{ order.full_name }} ({{ order.email }}, {{ order.phone }})
+{% for item in order.items.all %}{{ item.quantity }} × {{ item.wine_name }}
+{% endfor %}
+{% translate "Total" %}: {{ order.total|money }}
+{% for line in order.address_lines %}{{ line }}
+{% endfor %}{% if order.customer_note %}
+{% translate "Customer note" %}: {{ order.customer_note }}{% endif %}{% if order.staff_note %}
+
+{% translate "Check before shipping" %}: {{ order.staff_note }}{% endif %}
+
+{% translate "Open it in the team area" %}: {{ team_url }}
+{% endautoescape %}

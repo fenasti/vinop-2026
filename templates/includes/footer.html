@@ -1,0 +1,39 @@
+{% load i18n %}
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <section aria-labelledby="footer-news">
+      <h2 id="footer-news">{% translate "New arrivals from Chile, once a month" %}</h2>
+      <p class="muted">{% translate "Small harvests sell out. Hear about them first, no spam, unsubscribe any time." %}</p>
+      {% include "includes/newsletter_form.html" with field_id="footer-email" %}
+    </section>
+
+    <section aria-labelledby="footer-shop">
+      <h2 id="footer-shop">{% translate "Shop" %}</h2>
+      <ul>
+        <li><a href="{% url 'catalog:list' %}">{% translate "All wines" %}</a></li>
+        <li><a href="{% url 'cart:detail' %}">{% translate "Your cart" %}</a></li>
+        {% if user.is_authenticated %}
+          <li><a href="{% url 'accounts:orders' %}">{% translate "Your orders" %}</a></li>
+        {% else %}
+          <li><a href="{% url 'account_signup' %}">{% translate "Create an account" %}</a></li>
+        {% endif %}
+      </ul>
+    </section>
+
+    <section aria-labelledby="footer-info">
+      <h2 id="footer-info">{% translate "Information" %}</h2>
+      <ul>
+        {% for page in footer_pages %}<li><a href="{{ page.get_absolute_url }}">{{ page.title }}</a></li>{% endfor %}
+        {% if site.contact_email %}<li><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></li>{% endif %}
+        {% if site.contact_phone %}<li>{{ site.contact_phone }}</li>{% endif %}
+        {% if site.instagram_url %}<li><a href="{{ site.instagram_url }}" rel="noopener" target="_blank">Instagram</a></li>{% endif %}
+      </ul>
+    </section>
+
+    <p class="site-footer__fine">
+      {% if site.footer_text %}{{ site.footer_text }}<br>{% endif %}
+      {% blocktranslate trimmed %}All prices include VAT, plus shipping. Contains sulphites.{% endblocktranslate %}
+      © {% now "Y" %} {{ site.shop_name }}
+    </p>
+  </div>
+</footer>

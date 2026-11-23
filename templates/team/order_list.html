@@ -1,0 +1,49 @@
+{% extends "team/base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Orders" %}{% endblock %}
+
+{% block team_content %}
+  <div class="page-head page-head__row">
+    <h1 class="mb-0">{% translate "Orders" %}</h1>
+    <a class="btn btn--ghost" href="{% url 'team:packing_list' %}">{% icon "download" %} {% translate "Packing list (CSV)" %}</a>
+  </div>
+
+  <nav class="tabs" aria-label="{% translate 'Filter orders' %}">
+    {% for key, label, count in tabs %}
+      <a href="?tab={{ key }}" {% if tab == key %}aria-current="page"{% endif %}>{{ label }}{% if count is not None %} <span class="tabs__count">{{ count }}</span>{% endif %}</a>
+    {% endfor %}
+  </nav>
+
+  <div class="toolbar">
+    <form class="search" method="get" role="search">
+      <input type="hidden" name="tab" value="{{ tab }}">
+      <label class="visually-hidden" for="order-q">{% translate "Search orders" %}</label>
+      <input id="order-q" type="search" name="q" value="{{ query }}" placeholder="{% translate 'Order number, name or email' %}">
+      <button class="btn btn--ghost" type="submit">{% icon "search" _("Search") %}</button>
+    </form>
+  </div>
+
+  {% if page.object_list %}
+    <table class="table">
+      <thead><tr><th>{% translate "Order" %}</th><th>{% translate "Customer" %}</th><th>{% translate "Country" %}</th><th class="num">{% translate "Bottles" %}</th><th class="num">{% translate "Total" %}</th><th>{% translate "Status" %}</th></tr></thead>
+      <tbody>
+        {% for order in page.object_list %}
+          <tr>
+            <td class="table__primary">
+              <a href="{% url 'team:order_detail' order.number %}">{{ order.number }}</a>
+              <div class="small muted">{% if order.paid_at %}{% blocktranslate with date=order.paid_at|date:"j M, H:i" %}Paid {{ date }}{% endblocktranslate %}{% else %}{{ order.created_at|date:"j M, H:i" }}{% endif %}</div>
+            </td>
+            <td data-label="{% translate 'Customer' %}">{{ order.full_name }}</td>
+            <td data-label="{% translate 'Country' %}">{{ order.country.code }}</td>
+            <td class="num" data-label="{% translate 'Bottles' %}">{{ order.bottle_count }}</td>
+            <td class="num" data-label="{% translate 'Total' %}">{{ order.total|money }}</td>
+            <td data-label="{% translate 'Status' %}"><span class="pill pill--{{ order.status }}">{{ order.get_status_display }}</span>{% if order.staff_note %} {% icon "alert" _("Has an internal note") %}{% endif %}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% include "includes/pagination.html" %}
+  {% else %}
+    <div class="empty"><p>{% if tab == "to-ship" %}{% translate "Nothing to ship right now." %}{% else %}{% translate "No orders in this view." %}{% endif %}</p></div>
+  {% endif %}
+{% endblock %}

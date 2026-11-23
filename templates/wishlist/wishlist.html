@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head_title %}{% translate "Your wishlist" %}{% endblock %}
+
+{% block content %}
+  <header class="page-head"><h1>{% translate "Your wishlist" %}</h1></header>
+  {% if items %}
+    <ul class="wine-grid">
+      {% for item in items %}
+        <li>
+          {% include "catalog/includes/wine_card.html" with wine=item.wine %}
+          <form action="{% url 'wishlist:toggle' item.wine.pk %}" method="post" style="margin-top: var(--space-2)">
+            {% csrf_token %}
+            <button class="btn btn--quiet btn--small" type="submit">{% icon "x" %} {% translate "Remove" %}</button>
+          </form>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="empty">
+      <h2>{% translate "Nothing saved yet" %}</h2>
+      <p>{% translate "Tap “Save to wishlist” on any wine to keep it here, even when it's sold out." %}</p>
+      <a class="btn" href="{% url 'catalog:list' %}">{% translate "Browse the wines" %}</a>
+    </div>
+  {% endif %}
+{% endblock %}
