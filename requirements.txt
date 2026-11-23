@@ -13,4 +13,4 @@ python-dotenv>=1.2,<2
 gunicorn>=23.0,<25
 
 # Optional: keep uploaded photos in S3 in production (set USE_S3=True).
-# django-storages[s3]>=1.14,<2
+django-storages[s3]>=1.14,<2
